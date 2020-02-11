@@ -35,11 +35,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'oauth2_provider',
+    'rest_framework',
+
+    'products.apps.ProductsConfig',
+    'accounts.apps.AccountsConfig',
+    'cart.apps.CartConfig',
+    'orders.apps.OrdersConfig',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -60,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cart.context_processors.cart',
             ],
         },
     },
@@ -107,7 +116,6 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -117,7 +125,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 ADMINS = (
     ('Oscar Mwongera', 'oscamwongera@gmail.com')
 )
-
 
 # Email Settings
 
@@ -129,19 +136,6 @@ ADMINS = (
 # EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 
-# Authentication settings
-# Custom user model and related all-auth settings
-
-# AUTH_USER_MODEL = 'accounts.User'
-# ACCOUNT_AUTHENTICATION_METHOD = 'email'
-# ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_USERNAME_REQUIRED = False
-# ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
-#
-# AUTHENTICATION_BACKENDS = (
-#     'django.contrib.auth.backends.ModelBackend',
-#     'allauth.account.auth_backends.AuthenticationBackend',
-# )
 #
 # REST_AUTH_SERIALIZERS = {
 #     'USER_DETAILS_SERIALIZER': 'api.serializers.ProfileSerializer'
@@ -150,17 +144,37 @@ ADMINS = (
 
 # DRF Settings
 
-# REST_FRAMEWORK = {
-#
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.TokenAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-#     ]
-# }
-#
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+
+# Authentication settings
+
+AUTH_USER_MODEL = 'accounts.User'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend'  # To keep the Browsable API
+    'oauth2_provider.backends.OAuth2Backend',
+)
+
+# Oauth2 settings
+
+ALLOWED_HOSTS = ['0.0.0.0']
+CLIENT_ID = '<client-id>'
+CLIENT_SECRET = '<client-secret>'
+
 # SITE_ID = 1
 
 # Mpesa Settings
@@ -170,4 +184,3 @@ ADMINS = (
 # LNM_PASSKEY = config('LNM_PASSKEY')
 # CONSUMER_KEY = config('CONSUMER_KEY')
 # CONSUMER_SECRET = config('CONSUMER_SECRET')
-
