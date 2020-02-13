@@ -24,8 +24,6 @@ SECRET_KEY = 'o1+#i7ffr=xel+)dhh#2g+0c92vb%w$u76rs_lo-k_xtvkvbj3'
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS = []
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -159,10 +157,10 @@ REST_FRAMEWORK = {
 # Authentication settings
 
 AUTH_USER_MODEL = 'accounts.User'
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend'  # To keep the Browsable API
@@ -171,9 +169,9 @@ AUTHENTICATION_BACKENDS = (
 
 # Oauth2 settings
 
-ALLOWED_HOSTS = ['0.0.0.0']
-CLIENT_ID = '<client-id>'
-CLIENT_SECRET = '<client-secret>'
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
+CLIENT_ID = "0c92vb"
+CLIENT_SECRET = "o;ifutgyhjnmkycrudttvyfjvg"
 
 # SITE_ID = 1
 

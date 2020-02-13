@@ -23,7 +23,6 @@ class CreateUserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}, }
 
     def validate(self, data):
-        print(data)
 
         # here data has all the fields which have validated values
         # so we can create a User instance out of it
@@ -51,6 +50,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             password=make_password(validated_data['password'], salt=None, hasher='default')
         )
+        print(user, "user")
         return user
 
 

@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.conf import settings
 from .serializer import CreateUserSerializer
+from rest_framework.permissions import AllowAny
 
 import requests
 
@@ -12,10 +13,12 @@ CLIENT_SECRET = settings.CLIENT_ID
 
 # Create your views here.
 class Register(APIView):
+    permission_classes = (AllowAny, )
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email', False)
         password = request.data.get('password', False)
+        # print(email, password)
 
         if email and password:
             temp_data = {
@@ -35,6 +38,11 @@ class Register(APIView):
                         'client_secret': CLIENT_SECRET,
                     },
                 )
+                if not r.status_code == 200:
+                    return Response({"details": "Account not created"}, status=status.HTTP_424_FAILED_DEPENDENCY)
+
+                user = serializer.save()
+                print(r.status_code, "response json")
                 return Response(r.json())
             return Response(serializer.errors)
             # user = serializer.save()
@@ -46,6 +54,7 @@ class Register(APIView):
 
 
 class LoginView(APIView):
+    permission_classes = (AllowAny, )
 
     def post(self, request):
         '''

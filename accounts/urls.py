@@ -1,13 +1,13 @@
 from django.urls import path
 from . import views
 
-app_name = "products"
+app_name = "accounts"
 
 urlpatterns = [
-    path('add-category', views.Register.as_view(), name="register_view"),
-    path('list-categories', views.LoginView.as_view(), name="login_view"),
-    path('update-category', views.RefreshToken.as_view(), name="refresh_token_view"),
-    path('delete-category', views.Logout.as_view(), name="logout_view"),
+    path('create-account', views.Register.as_view(), name="register_view"),
+    path('login', views.LoginView.as_view(), name="login_view"),
+    path('refresh-token', views.RefreshToken.as_view(), name="refresh_token_view"),
+    path('logout', views.Logout.as_view(), name="logout_view"),
 ]
 
 # Register, login, refresh token, logout, change password, recover password
