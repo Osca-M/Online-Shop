@@ -4,49 +4,50 @@ from rest_framework.response import Response
 from django.conf import settings
 from .serializer import CreateUserSerializer
 from rest_framework.permissions import AllowAny
-
 import requests
+# from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
 CLIENT_ID = settings.CLIENT_ID
-CLIENT_SECRET = settings.CLIENT_ID
+CLIENT_SECRET = settings.CLIENT_SECRET
 
 
 # Create your views here.
 class Register(APIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email', False)
         password = request.data.get('password', False)
-        # print(email, password)
-
+        print(request.data.get('email'), "request data")
         if email and password:
             temp_data = {
                 'email': email,
                 'password': password
             }
+
             serializer = CreateUserSerializer(data=temp_data)
             serializer.is_valid(raise_exception=True)
             if serializer.is_valid():
+                user = serializer.save()
+
                 r = requests.post(
                     'http://0.0.0.0:8000/o/token/',
                     data={
-                        'grant_type': 'password',
-                        'email': request.data['email'],
-                        'password': request.data['password'],
+                        'grant_type': 'client_credentials',
+                        'username': email,
+                        'password': password,
                         'client_id': CLIENT_ID,
                         'client_secret': CLIENT_SECRET,
+                        'scope': 'read'
                     },
                 )
-                if not r.status_code == 200:
-                    return Response({"details": "Account not created"}, status=status.HTTP_424_FAILED_DEPENDENCY)
-
-                user = serializer.save()
-                print(r.status_code, "response json")
-                return Response(r.json())
+                # If it goes well return sucess message (would be empty otherwise)
+                print(r.json())
+                if r.status_code == requests.codes.ok:
+                    return Response(r.json(), r.status_code)
+                # Return the error if it goes badly
+                return Response({"details": r.json()}, r.status_code)
             return Response(serializer.errors)
-            # user = serializer.save()
-            # return Response({"detail": "Account created successfully"}, status=status.HTTP_201_CREATED)
 
         else:
             return Response({"detail": "Please input e-mail address and password correctly"},
@@ -54,7 +55,7 @@ class Register(APIView):
 
 
 class LoginView(APIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         '''

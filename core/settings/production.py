@@ -3,7 +3,11 @@ DEBUG = False
 
 from decouple import config
 
+# Site admins
 
+ADMINS = (
+    ('Osca Mwongera', 'oscamwongera@gmail.com')
+)
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 

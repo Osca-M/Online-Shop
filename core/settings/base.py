@@ -33,8 +33,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'django.contrib.sites',
+    
     'oauth2_provider',
     'rest_framework',
+    'corsheaders',
 
     'products.apps.ProductsConfig',
     'accounts.apps.AccountsConfig',
@@ -46,6 +49,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'oauth2_provider.middleware.OAuth2TokenMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -118,12 +122,6 @@ MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Site admins
-
-ADMINS = (
-    ('Oscar Mwongera', 'oscamwongera@gmail.com')
-)
-
 # Email Settings
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -133,46 +131,45 @@ ADMINS = (
 # EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 # EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
-
-#
-# REST_AUTH_SERIALIZERS = {
-#     'USER_DETAILS_SERIALIZER': 'api.serializers.ProfileSerializer'
-# }
-
+# CORS Settings
+CORS_ORIGIN_ALLOW_ALL = True
 
 # DRF Settings
 
 REST_FRAMEWORK = {
-
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        'rest_framework.authentication.TokenAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  # To keep the Browsable API
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ),
 }
 
 # Authentication settings
 
 AUTH_USER_MODEL = 'accounts.User'
-# ACCOUNT_AUTHENTICATION_METHOD = 'email'
-# ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
 # ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 
+# --- Specify the authentication backends
+
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend'  # To keep the Browsable API
+    'django.contrib.auth.backends.ModelBackend',  # To keep the Browsable API
     'oauth2_provider.backends.OAuth2Backend',
 )
 
 # Oauth2 settings
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
-CLIENT_ID = "0c92vb"
-CLIENT_SECRET = "o;ifutgyhjnmkycrudttvyfjvg"
-
+# ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
+CLIENT_ID = "FfOxJ8qDG7LZTf9oDNqfb730ZZZ2oFCUTh1BoFmq"
+CLIENT_SECRET = "twkW4csLEdFf3iZprQ41a8Dgqfxj3FmfiCILwDoNE0Caccq0JRP5YUHQtCLxyr9j2yyYvJlqpeQ1LHUhUsWzXLn2kgpZmyd8I12Pv2qF5xt79xBJQGQXFnB5CKUlecpZ "
+OAUTH2_PROVIDER = {
+    # this is the list of available scopes
+    'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'}
+}
 # SITE_ID = 1
 
 # Mpesa Settings
@@ -182,3 +179,5 @@ CLIENT_SECRET = "o;ifutgyhjnmkycrudttvyfjvg"
 # LNM_PASSKEY = config('LNM_PASSKEY')
 # CONSUMER_KEY = config('CONSUMER_KEY')
 # CONSUMER_SECRET = config('CONSUMER_SECRET')
+
+CART_SESSION_ID = "155265"
