@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django.contrib.sites',
+    'django.contrib.sites',
     
     'oauth2_provider',
     'rest_framework',
@@ -149,9 +149,11 @@ REST_FRAMEWORK = {
 # Authentication settings
 
 AUTH_USER_MODEL = 'accounts.User'
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
+# ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_USERNAME_REQUIRED = False
 # ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 
 # --- Specify the authentication backends
@@ -163,14 +165,15 @@ AUTHENTICATION_BACKENDS = (
 
 # Oauth2 settings
 
-# ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1', 'localhost']
-CLIENT_ID = "FfOxJ8qDG7LZTf9oDNqfb730ZZZ2oFCUTh1BoFmq"
-CLIENT_SECRET = "twkW4csLEdFf3iZprQ41a8Dgqfxj3FmfiCILwDoNE0Caccq0JRP5YUHQtCLxyr9j2yyYvJlqpeQ1LHUhUsWzXLn2kgpZmyd8I12Pv2qF5xt79xBJQGQXFnB5CKUlecpZ "
 OAUTH2_PROVIDER = {
+    # 'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore',
     # this is the list of available scopes
     'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'}
 }
-# SITE_ID = 1
+
+# REFRESH_TOKEN_EXPIRE_SECONDS = 101000
+
+SITE_ID = 1
 
 # Mpesa Settings
 

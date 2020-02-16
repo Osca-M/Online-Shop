@@ -1,19 +1,16 @@
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from django.conf import settings
 from .serializer import CreateUserSerializer
 from rest_framework.permissions import AllowAny
 import requests
-# from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
-
-CLIENT_ID = settings.CLIENT_ID
-CLIENT_SECRET = settings.CLIENT_SECRET
-
+from oauth2_provider.models import Application
+CLIENT_ID = Application.objects.get(name='commerce').client_id
+CLIENT_SECRET = Application.objects.get(name='commerce').client_secret
 
 # Create your views here.
 class Register(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny, )
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email', False)
@@ -37,8 +34,7 @@ class Register(APIView):
                         'username': email,
                         'password': password,
                         'client_id': CLIENT_ID,
-                        'client_secret': CLIENT_SECRET,
-                        'scope': 'read'
+                        'client_secret': CLIENT_SECRET
                     },
                 )
                 # If it goes well return sucess message (would be empty otherwise)
@@ -65,11 +61,13 @@ class LoginView(APIView):
         r = requests.post(
             'http://0.0.0.0:8000/o/token/',
             data={
-                'grant_type': 'password',
-                'email': request.data['email'],
+                'grant_type': 'client_credentials',
+                'username': request.data['email'],
                 'password': request.data['password'],
                 'client_id': CLIENT_ID,
                 'client_secret': CLIENT_SECRET,
+                'refresh_token': True,
+                "scope": "read"
             },
         )
         return Response(r.json())
@@ -110,6 +108,6 @@ class Logout(APIView):
         )
         # If it goes well return sucess message (would be empty otherwise)
         if r.status_code == requests.codes.ok:
-            return Response({'message': 'token revoked'}, r.status_code)
+            return Response({'details': 'token revoked'}, r.status_code)
         # Return the error if it goes badly
         return Response(r.json(), r.status_code)
