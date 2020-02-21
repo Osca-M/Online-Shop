@@ -1,0 +1,21 @@
+# .coveragerc to control coverage.py
+[run]
+source = .
+omit =
+   *core/*
+   *manage.py
+   */settings.py
+   */local_settings.py
+   */tests/*
+   *apps.py
+   *migrations/*
+   *templates/*
+   *media/*
+
+   *__init__*
+   */__pycache__/*
+
+
+[report]
+#fail_under = 100
+show_missing = True
