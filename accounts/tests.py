@@ -1,9 +1,10 @@
 from django.test import TestCase
-from accounts.models import User, UserProfile
+from .models import User, UserProfile
 from mixer.backend.django import mixer
 import pytest
 
 pytest_mark = pytest.mark.django_db
+
 
 # Create your tests here.
 class TestUserModel(TestCase):
