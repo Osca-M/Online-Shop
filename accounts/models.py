@@ -46,14 +46,14 @@ class User(AbstractBaseUser):
 class UserProfile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    first_name = models.CharField(max_length=50, unique=False)
-    last_name = models.CharField(max_length=50, unique=False)
+    full_name = models.CharField(max_length=255, unique=False)
+    # last_name = models.CharField(max_length=50, unique=False)
     phone_regex = RegexValidator(
         regex=r'^\+?|d{9,14}$',
         message="Phone number must be entered in the format: '+99999'. Up to 14 digits allowed."
     )
     phone_number = models.CharField(max_length=15, validators=[phone_regex], unique=True, null=False, blank=True)
-    username = models.CharField(blank=True, max_length=255, unique=False)
+    username = models.CharField(blank=True, max_length=255, unique=True)
     age = models.PositiveIntegerField(null=False, blank=True)
     GENDER_CHOICES = (
         ('M', 'Male'),
