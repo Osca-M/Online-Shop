@@ -71,32 +71,36 @@ class Register(APIView):
                     #     return Response(r.json(), r.status_code)
                     # # Return the error if it goes badly
                     # return Response({"details": r.json()}, r.status_code)
-                    return Response({"details": "User created successfully"}, status=status.HTTP_201_CREATED)
-                return Response(serializer.errors)
+                    return Response({'detail': 'User created successfully'}, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
             else:
-                return Response({"detail": "Please input e-mail address and password correctly"},
-                                status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {'detail': 'Please input e-mail address and password correctly'}, status=status.HTTP_400_BAD_REQUEST
+                )
 
 
 class LoginView(APIView):
     permission_classes = (AllowAny,)
 
-    def post(self, request):
-        '''
+    @staticmethod
+    def post(request):
+        """
         Gets tokens with username and password. Input should be in the format:
         {"username": "username", "password": "1234abcd"}
-        '''
+        """
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             try:
-                application_model = get_application_model().objects.get(name=request.data['email'])
+                application_model = get_application_model().objects.get(name=serializer.validated_data.get('email'))
             except get_application_model().DoesNotExist:
                 return Response({"details": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
             user_client_id = application_model.client_id
             user_client_secret = application_model.client_secret
+            scheme = request.is_secure() and "https" or "http"
+            url = scheme + '://' + request.get_host() + '/o/token/'
             r = requests.post(
-                'http://0.0.0.0:8000/o/token/',
+                url,
                 data={
                     'grant_type': 'password',
                     'username': request.data['email'],
@@ -110,7 +114,7 @@ class LoginView(APIView):
             return Response(r.json())
 
         else:
-            return Response({"details": "Incorrect email or password"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'Incorrect email or password'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RefreshToken(APIView):

@@ -50,7 +50,6 @@ class CreateUserSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             password=make_password(validated_data['password'], salt=None, hasher='default')
         )
-        print(user, "user")
         return user
 
 
@@ -61,6 +60,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
     email = serializers.CharField()
     password = serializers.CharField(
         style={'input_type': 'password'}, trim_whitespace=False
@@ -74,22 +79,13 @@ class LoginSerializer(serializers.Serializer):
             if User.objects.filter(email=email).exists():
                 user = authenticate(request=self.context.get('request'), email=email, password=password)
             else:
-                msg = {
-                    "details": 'Email not found',
-                    "status": False,
-                }
+                msg = {'detail': 'Email not found', 'status': False}
                 raise serializers.ValidationError(msg)
             if not user:
-                msg = {
-                    "details": "Email and password are not matching, Try again",
-                    "status": False,
-                }
+                msg = {'detail': 'Email and password are not matching, Try again', 'status': False}
                 raise serializers.ValidationError(msg, code='authorization')
         else:
-            msg = {
-                "details": "Email address and password not found in request",
-                "status": False,
-            }
+            msg = {'detail': 'Email address and password not found in request', 'status': False}
             raise serializers.ValidationError(msg, code='authorization')
         data['user'] = user
         return data
