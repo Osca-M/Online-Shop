@@ -22,17 +22,15 @@ CLIENT_SECRET = "Application.objects.get(name='commerce').client_secret"
 class Register(APIView):
     permission_classes = (AllowAny,)
 
-    def post(self, request, *args, **kwargs):
+    @staticmethod
+    def post(request, *args, **kwargs):
         with transaction.atomic():
             email = request.data.get('email', False)
             password = request.data.get('password', False)
             if get_user_model().objects.filter(email=email).exists():
                 return Response({"details": "User with such a mail address exists"}, status=status.HTTP_400_BAD_REQUEST)
             if email and password:
-                temp_data = {
-                    'email': email,
-                    'password': password
-                }
+                temp_data = {'email': email, 'password': password}
 
                 serializer = CreateUserSerializer(data=temp_data)
                 serializer.is_valid(raise_exception=True)
