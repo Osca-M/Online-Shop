@@ -53,7 +53,7 @@ class UserProfile(models.Model):
         message="Phone number must be entered in the format: '+99999'. Up to 14 digits allowed."
     )
     phone_number = models.CharField(max_length=15, validators=[phone_regex], unique=True, null=False, blank=True)
-    username = models.CharField(blank=True, max_length=255, unique=True)
+    username = models.CharField(blank=True, max_length=255, unique=False)
     age = models.PositiveIntegerField(null=False, blank=True)
     GENDER_CHOICES = (
         ('M', 'Male'),
