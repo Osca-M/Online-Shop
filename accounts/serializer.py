@@ -16,7 +16,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ('email', 'password')
@@ -89,3 +88,13 @@ class LoginSerializer(serializers.Serializer):
             raise serializers.ValidationError(msg, code='authorization')
         data['user'] = user
         return data
+
+
+class RefreshTokenSerializer(serializers.Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    refresh_token = serializers.CharField()

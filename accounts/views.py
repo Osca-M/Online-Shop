@@ -12,7 +12,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializer import CreateUserSerializer, LoginSerializer
+from .serializer import CreateUserSerializer, LoginSerializer, RefreshTokenSerializer
 
 CLIENT_ID = "Application.objects.get(name='commerce').client_id"
 CLIENT_SECRET = "Application.objects.get(name='commerce').client_secret"
@@ -28,7 +28,7 @@ class Register(APIView):
             email = request.data.get('email', False)
             password = request.data.get('password', False)
             if get_user_model().objects.filter(email=email).exists():
-                return Response({"details": "User with such a mail address exists"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'detail': 'User with such a mail address exists'}, status=status.HTTP_400_BAD_REQUEST)
             if email and password:
                 temp_data = {'email': email, 'password': password}
 
@@ -94,10 +94,10 @@ class LoginView(APIView):
             try:
                 application_model = get_application_model().objects.get(name=serializer.validated_data.get('email'))
             except get_application_model().DoesNotExist:
-                return Response({"details": "User does not exist"}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'detail': 'User does not exist'}, status=status.HTTP_404_NOT_FOUND)
             user_client_id = application_model.client_id
             user_client_secret = application_model.client_secret
-            scheme = request.is_secure() and "https" or "http"
+            scheme = request.is_secure() and 'https' or 'http'
             url = scheme + '://' + request.get_host() + '/o/token/'
             r = requests.post(
                 url,
@@ -119,58 +119,64 @@ class LoginView(APIView):
 
 class RefreshToken(APIView):
 
-    def post(self, request):
-        '''
+    @staticmethod
+    def post(request):
+        """
         Registers user to the server. Input should be in the format:
         {"refresh_token": "<token>"}
-        '''
-        token = request.data['refresh_token']
-        try:
-            token_details = get_object_or_404(get_refresh_token_model(), token=token)
-        except get_refresh_token_model().DoesNotExist:
-            return Response({"details": "Refresh token does not exist"}, status=status.HTTP_404_NOT_FOUND)
+        """
+        serializer = RefreshTokenSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                token_details = get_object_or_404(
+                    get_refresh_token_model(), token=serializer.validated_data.get('refresh_token')
+                )
+            except get_refresh_token_model().DoesNotExist:
+                return Response({'details': 'Refresh token does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
-        user = get_object_or_404(get_application_model(), user_id=token_details.user_id)
-        user_client_id = user.client_id
-        user_client_secret = user.client_secret
-        r = requests.post(
-            'http://0.0.0.0:8000/o/token/',
-            data={
-                'grant_type': 'refresh_token',
-                'refresh_token': token,
-                'client_id': user_client_id,
-                'client_secret': user_client_secret,
-            },
-        )
-        return Response(r.json())
+            user = get_object_or_404(get_application_model(), user_id=token_details.user_id)
+            user_client_id = user.client_id
+            user_client_secret = user.client_secret
+            scheme = request.is_secure() and 'https' or 'http'
+            url = scheme + '://' + request.get_host() + '/o/token/'
+            r = requests.post(
+                url,
+                data={
+                    'grant_type': 'refresh_token',
+                    'refresh_token': serializer.validated_data.get('refresh_token'),
+                    'client_id': user_client_id,
+                    'client_secret': user_client_secret,
+                },
+            )
+            return Response(r.json())
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Logout(APIView):
-    def post(self, request):
-        '''
+    @staticmethod
+    def post(request):
+        """
         Method to revoke tokens.
         {"token": "<token>"}
-        '''
+        """
         authorization = request.headers.get('Authorization')
         token = authorization.split(' ')[1]
         try:
             token_details = get_object_or_404(get_access_token_model(), token=token)
         except get_access_token_model().DoesNotExist:
-            return Response({"details": "Token does not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'detail': 'Token does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
         user = get_object_or_404(get_application_model(), user_id=token_details.user_id)
         user_client_id = user.client_id
         user_client_secret = user.client_secret
+        scheme = request.is_secure() and 'https' or 'http'
+        url = scheme + '://' + request.get_host() + '/o/revoke_token/'
         r = requests.post(
-            'http://0.0.0.0:8000/o/revoke_token/',
-            data={
-                'token': token,
-                'client_id': user_client_id,
-                'client_secret': user_client_secret,
-            },
+            url,
+            data={'token': token, 'client_id': user_client_id, 'client_secret': user_client_secret},
         )
-        # If it goes well return sucess message (would be empty otherwise)
+        # If it goes well return success message (would be empty otherwise)
         if r.status_code == requests.codes.ok:
-            return Response({'details': 'Logged our successfully'}, r.status_code)
+            return Response({'detail': 'Logged out successfully'}, r.status_code)
         # Return the error if it goes badly
         return Response(r.json(), r.status_code)
