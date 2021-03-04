@@ -132,7 +132,7 @@ class RefreshToken(APIView):
                     get_refresh_token_model(), token=serializer.validated_data.get('refresh_token')
                 )
             except get_refresh_token_model().DoesNotExist:
-                return Response({'details': 'Refresh token does not exist'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({'detail': 'Refresh token does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
             user = get_object_or_404(get_application_model(), user_id=token_details.user_id)
             user_client_id = user.client_id
