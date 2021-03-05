@@ -73,18 +73,35 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
-        pass
+        profile = instance.profile
+        profile.full_name = validated_data.get('full_name')
+        profile.phone_number = validated_data.get('phone_number')
+        profile.username = validated_data.get('username')
+        profile.age = validated_data.get('age')
+        profile.gender = validated_data.get('gender')
+        profile.save()
+        return instance
 
     def create(self, validated_data):
         pass
 
-    id = serializers.UUIDField()
-    email = serializers.EmailField()
-    profile = UserProfileSerializer()
+    id = serializers.UUIDField(read_only=True)
+    email = serializers.EmailField(read_only=True)
+    full_name = serializers.CharField(max_length=255, write_only=True)
+    phone_number = serializers.CharField(max_length=15, write_only=True)
+    username = serializers.CharField(max_length=255, write_only=True)
+    age = serializers.IntegerField(min_value=12, write_only=True)
+    gender = serializers.ChoiceField(choices=GENDER_CHOICES, write_only=True)
 
-    class Meta:
-        model = User
-        fields = ('id', 'email')
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        profile = UserProfileSerializer(instance.profile).data
+        data['full_name'] = profile['full_name']
+        data['phone_number'] = profile['phone_number']
+        data['username'] = profile['username']
+        data['age'] = profile['age']
+        data['gender'] = profile['gender']
+        return data
 
 
 class LoginSerializer(serializers.Serializer):

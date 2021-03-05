@@ -12,8 +12,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializer import CreateUserSerializer, LoginSerializer, RefreshTokenSerializer
 
+from .serializer import CreateUserSerializer, LoginSerializer, RefreshTokenSerializer, UserSerializer
+User = get_user_model()
 CLIENT_ID = "Application.objects.get(name='commerce').client_id"
 CLIENT_SECRET = "Application.objects.get(name='commerce').client_secret"
 
@@ -180,3 +181,19 @@ class Logout(APIView):
             return Response({'detail': 'Logged out successfully'}, r.status_code)
         # Return the error if it goes badly
         return Response(r.json(), r.status_code)
+
+
+class ProfileView(APIView):
+    @staticmethod
+    def get(request):
+        user = get_object_or_404(User, email=request.user)
+        return Response(UserSerializer(user).data)
+
+    @staticmethod
+    def put(request):
+        user = get_object_or_404(User, email=request.user)
+        serializer = UserSerializer(instance=user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
