@@ -8,11 +8,29 @@ from .models import UserProfile
 
 User = get_user_model()
 
+GENDER_CHOICES = (
+    ('M', 'Male'),
+    ('F', 'Female'),
+    ('U', 'Unspecified')
+)
 
-class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = ('first_name', 'last_name', 'phone_number', 'username', 'age', 'gender')
+
+class UserProfileSerializer(serializers.Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    full_name = serializers.CharField(max_length=255)
+    phone_number = serializers.CharField(max_length=15)
+    username = serializers.CharField(max_length=255)
+    age = serializers.IntegerField(min_value=12)
+    gender = serializers.ChoiceField(choices=GENDER_CHOICES)
+
+    # class Meta:
+    #     model = UserProfile
+    #     fields = ('first_name', 'last_name', 'phone_number', 'username', 'age', 'gender')
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
@@ -49,10 +67,21 @@ class CreateUserSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             password=make_password(validated_data['password'], salt=None, hasher='default')
         )
+        UserProfile.objects.create(user=user, age=0)
         return user
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    id = serializers.UUIDField()
+    email = serializers.EmailField()
+    profile = UserProfileSerializer()
+
     class Meta:
         model = User
         fields = ('id', 'email')
