@@ -16,4 +16,4 @@ class StockAlert(AbstractStockAlert):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
 
 
-from oscar.apps.partner.models import *
+from oscar.apps.partner.models import *  # noqa isort:skip
