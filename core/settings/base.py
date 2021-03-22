@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'rest_framework',
     'corsheaders',
-
     'products.apps.ProductsConfig',
     'accounts.apps.AccountsConfig',
     'cart.apps.CartConfig',
@@ -51,19 +50,19 @@ INSTALLED_APPS = [
 
     'oscarapi',
     'oscar.config.Shop',
-    'oscar.apps.analytics.apps.AnalyticsConfig',
-    'oscar.apps.checkout.apps.CheckoutConfig',
+    'analytics.apps.AnalyticsConfig',
+    'checkout.apps.CheckoutConfig',
     'oscar.apps.address.apps.AddressConfig',
     'oscar.apps.shipping.apps.ShippingConfig',
-    'oscar.apps.catalogue.apps.CatalogueConfig',
-    'oscar.apps.catalogue.reviews.apps.CatalogueReviewsConfig',
-    'oscar.apps.communication.apps.CommunicationConfig',
-    'oscar.apps.partner.apps.PartnerConfig',
-    'oscar.apps.basket.apps.BasketConfig',
-    'oscar.apps.payment.apps.PaymentConfig',
-    'oscar.apps.offer.apps.OfferConfig',
-    'oscar.apps.order.apps.OrderConfig',
-    'oscar.apps.customer.apps.CustomerConfig',
+    'catalogue.apps.CatalogueConfig',
+    'catalogue.reviews.apps.CatalogueReviewsConfig',
+    'communication.apps.CommunicationConfig',
+    'partner.apps.PartnerConfig',
+    'basket.apps.BasketConfig',
+    'payment.apps.PaymentConfig',
+    'offer.apps.OfferConfig',
+    'order.apps.OrderConfig',
+    'customer.apps.CustomerConfig',
     'oscar.apps.search.apps.SearchConfig',
     'oscar.apps.voucher.apps.VoucherConfig',
     'oscar.apps.wishlists.apps.WishlistsConfig',
@@ -192,24 +191,15 @@ REST_FRAMEWORK = {
 }
 
 # Authentication settings
-
 AUTH_USER_MODEL = 'accounts.User'
-# ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-
-# ACCOUNT_AUTHENTICATION_METHOD = 'email'
-# ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_USERNAME_REQUIRED = False
-# ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
 
 # --- Specify the authentication backends
-
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # To keep the Browsable API
     'oauth2_provider.backends.OAuth2Backend',
 )
 
 # Oauth2 settings
-
 OAUTH2_PROVIDER = {
     # 'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore',
     # this is the list of available scopes
@@ -234,4 +224,4 @@ HAYSTACK_CONNECTIONS = {
         'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
     },
 }
-OSCARAPI_BLOCK_ADMIN_API_ACCESS = False
+# OSCARAPI_BLOCK_ADMIN_API_ACCESS = False

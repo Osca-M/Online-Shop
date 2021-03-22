@@ -25,7 +25,7 @@ urlpatterns = [
     # path('products/', include('products.urls', namespace='products')),
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('auth/', include('accounts.urls', namespace='accounts')),
-    path('api/', include('oscarapi.urls')),
+    # path('api/', include('oscarapi.urls')),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
