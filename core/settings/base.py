@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+from oscar.defaults import *
+
+# from dotenv import load_dotenv
+# load_dotenv()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -24,8 +28,6 @@ SECRET_KEY = 'o1+#i7ffr=xel+)dhh#2g+0c92vb%w$u76rs_lo-k_xtvkvbj3'
 # SECURITY WARNING: don't run with debug turned on in production!
 
 
-ALLOWED_HOSTS = []
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -35,16 +37,69 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
+
+    'oauth2_provider',
+    'rest_framework',
+    'corsheaders',
+    # 'products.apps.ProductsConfig',
+    'accounts.apps.AccountsConfig',
+    # 'cart.apps.CartConfig',
+    # 'orders.apps.OrdersConfig',
+
+    'oscarapi',
+    'oscar.config.Shop',
+    'analytics.apps.AnalyticsConfig',
+    'checkout.apps.CheckoutConfig',
+    'oscar.apps.address.apps.AddressConfig',
+    'oscar.apps.shipping.apps.ShippingConfig',
+    'catalogue.apps.CatalogueConfig',
+    'catalogue.reviews.apps.CatalogueReviewsConfig',
+    'communication.apps.CommunicationConfig',
+    'partner.apps.PartnerConfig',
+    'basket.apps.BasketConfig',
+    'payment.apps.PaymentConfig',
+    'offer.apps.OfferConfig',
+    'order.apps.OrderConfig',
+    'customer.apps.CustomerConfig',
+    'search.apps.SearchConfig',
+    'voucher.apps.VoucherConfig',
+    'wishlists.apps.WishlistsConfig',
+    'dashboard.apps.DashboardConfig',
+    'dashboard.reports.apps.ReportsDashboardConfig',
+    'dashboard.users.apps.UsersDashboardConfig',
+    'dashboard.orders.apps.OrdersDashboardConfig',
+    'dashboard.catalogue.apps.CatalogueDashboardConfig',
+    'dashboard.offers.apps.OffersDashboardConfig',
+    'dashboard.partners.apps.PartnersDashboardConfig',
+    'dashboard.pages.apps.PagesDashboardConfig',
+    'dashboard.ranges.apps.RangesDashboardConfig',
+    'dashboard.reviews.apps.ReviewsDashboardConfig',
+    'dashboard.vouchers.apps.VouchersDashboardConfig',
+    'dashboard.communications.apps.CommunicationsDashboardConfig',
+    'dashboard.shipping.apps.ShippingDashboardConfig',
+
+    'widget_tweaks',
+    'haystack',
+    'treebeard',
+    # 'solr.thumbnail',
+    'django_tables2',
+    'api'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'oscar.apps.basket.middleware.BasketMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware'
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -60,6 +115,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cart.context_processors.cart',
             ],
         },
     },
@@ -107,17 +163,9 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Site admins
-
-ADMINS = (
-    ('Oscar Mwongera', 'oscamwongera@gmail.com')
-)
-
 
 # Email Settings
 
@@ -128,40 +176,40 @@ ADMINS = (
 # EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 # EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
-
-# Authentication settings
-# Custom user model and related all-auth settings
-
-# AUTH_USER_MODEL = 'accounts.User'
-# ACCOUNT_AUTHENTICATION_METHOD = 'email'
-# ACCOUNT_EMAIL_REQUIRED = True
-# ACCOUNT_USERNAME_REQUIRED = False
-# ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False
-#
-# AUTHENTICATION_BACKENDS = (
-#     'django.contrib.auth.backends.ModelBackend',
-#     'allauth.account.auth_backends.AuthenticationBackend',
-# )
-#
-# REST_AUTH_SERIALIZERS = {
-#     'USER_DETAILS_SERIALIZER': 'api.serializers.ProfileSerializer'
-# }
-
+# CORS Settings
+CORS_ORIGIN_ALLOW_ALL = True
 
 # DRF Settings
 
-# REST_FRAMEWORK = {
-#
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.TokenAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-#     ]
-# }
-#
-# SITE_ID = 1
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework.authentication.SessionAuthentication',  # To keep the Browsable API
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+# Authentication settings
+AUTH_USER_MODEL = 'accounts.User'
+
+# --- Specify the authentication backends
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # To keep the Browsable API
+    'oauth2_provider.backends.OAuth2Backend',
+)
+
+# Oauth2 settings
+OAUTH2_PROVIDER = {
+    # 'OAUTH2_BACKEND_CLASS': 'oauth2_provider.oauth2_backends.JSONOAuthLibCore',
+    # this is the list of available scopes
+    'SCOPES': {'read': 'Read scope', 'write': 'Write scope', 'groups': 'Access to your groups'}
+}
+
+# REFRESH_TOKEN_EXPIRE_SECONDS = 101000
+
+SITE_ID = 1
 
 # Mpesa Settings
 
@@ -171,3 +219,10 @@ ADMINS = (
 # CONSUMER_KEY = config('CONSUMER_KEY')
 # CONSUMER_SECRET = config('CONSUMER_SECRET')
 
+CART_SESSION_ID = '155265'
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}
+# OSCARAPI_BLOCK_ADMIN_API_ACCESS = False
