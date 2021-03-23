@@ -1,23 +1,21 @@
-import uuid
-from django.db import models
 from oscar.apps.analytics.abstract_models import AbstractProductRecord, AbstractUserRecord, AbstractUserProductView, \
     AbstractUserSearch  # noqa isort:skip
 
 
 class ProductRecord(AbstractProductRecord):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class UserRecord(AbstractUserRecord):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class UserProductView(AbstractUserProductView):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class UserSearch(AbstractUserSearch):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
-from oscar.apps.analytics.models import *
+from oscar.apps.analytics.models import * # noqa isort:skip

@@ -84,7 +84,8 @@ INSTALLED_APPS = [
     'haystack',
     'treebeard',
     # 'solr.thumbnail',
-    'django_tables2'
+    'django_tables2',
+    'api'
 ]
 
 MIDDLEWARE = [

@@ -1,60 +1,58 @@
-import uuid
-from django.db import models
 from oscar.apps.order.abstract_models import AbstractOrder, AbstractOrderNote, AbstractOrderStatusChange, \
     AbstractCommunicationEvent, AbstractLine, AbstractLineAttribute, AbstractLinePrice, AbstractPaymentEventType, \
     AbstractPaymentEvent, AbstractShippingEvent, AbstractShippingEventType, AbstractOrderDiscount, AbstractSurcharge  # noqa isort:skip
 
 
 class Order(AbstractOrder):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class OrderNote(AbstractOrderNote):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class OrderStatusChange(AbstractOrderStatusChange):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class CommunicationEvent(AbstractCommunicationEvent):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class Line(AbstractLine):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class LineAttribute(AbstractLineAttribute):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class LinePrice(AbstractLinePrice):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class PaymentEventType(AbstractPaymentEventType):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class PaymentEvent(AbstractPaymentEvent):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class ShippingEvent(AbstractShippingEvent):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class ShippingEventType(AbstractShippingEventType):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class OrderDiscount(AbstractOrderDiscount):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class Surcharge(AbstractSurcharge):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
-from oscar.apps.order.models import *
+from oscar.apps.order.models import * # noqa isort:skip

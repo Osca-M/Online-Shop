@@ -1,19 +1,17 @@
-import uuid
-from django.db import models
 from oscar.apps.partner.abstract_models import AbstractPartner, AbstractStockRecord, \
     AbstractStockAlert  # noqa isort:skip
 
 
 class Partner(AbstractPartner):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class StockRecord(AbstractStockRecord):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class StockAlert(AbstractStockAlert):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 from oscar.apps.partner.models import *  # noqa isort:skip

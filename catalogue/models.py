@@ -1,4 +1,3 @@
-import uuid
 from django.db import models
 from oscar.apps.catalogue.abstract_models import AbstractProductClass, AbstractCategory, AbstractProductCategory, \
     AbstractProduct, AbstractProductRecommendation, AbstractProductAttribute, AbstractProductAttributeValue, \
@@ -6,44 +5,43 @@ from oscar.apps.catalogue.abstract_models import AbstractProductClass, AbstractC
 
 
 class ProductClass(AbstractProductClass):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class Category(AbstractCategory):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class ProductCategory(AbstractProductCategory):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class Product(AbstractProduct):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     video_url = models.URLField(null=True)
 
 
 class ProductRecommendation(AbstractProductRecommendation):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class ProductAttribute(AbstractProductAttribute):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class ProductAttributeValue(AbstractProductAttributeValue):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class AttributeOptionGroup(AbstractAttributeOptionGroup):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class AttributeOption(AbstractAttributeOption):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 class Option(AbstractOption):
-    id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    pass
 
 
 from oscar.apps.catalogue.models import *  # noqa isort:skip
