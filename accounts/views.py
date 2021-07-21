@@ -1,19 +1,18 @@
 import requests
-
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-
 from oauth2_provider.generators import generate_client_id, generate_client_secret
 from oauth2_provider.models import get_application_model, get_refresh_token_model, get_access_token_model
-
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .serializer import CreateUserSerializer, LoginSerializer, RefreshTokenSerializer, UserSerializer, \
+    ChangePasswordSerializer
 
-from .serializer import CreateUserSerializer, LoginSerializer, RefreshTokenSerializer, UserSerializer
 User = get_user_model()
 CLIENT_ID = "Application.objects.get(name='commerce').client_id"
 CLIENT_SECRET = "Application.objects.get(name='commerce').client_secret"
@@ -25,6 +24,10 @@ class Register(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
+        """
+        Creates a User account with email and password. Request payload should be in the format:
+        {"email": "mail@example.com", "password": "1234abcd"}
+        """
         with transaction.atomic():
             email = request.data.get('email', False)
             password = request.data.get('password', False)
@@ -32,14 +35,12 @@ class Register(APIView):
                 return Response({'detail': 'User with such a mail address exists'}, status=status.HTTP_400_BAD_REQUEST)
             if email and password:
                 temp_data = {'email': email, 'password': password}
-
                 serializer = CreateUserSerializer(data=temp_data)
-                serializer.is_valid(raise_exception=True)
                 if serializer.is_valid():
                     user = serializer.save()
                     user_client_id = generate_client_id()
                     user_client_secret = generate_client_secret()
-                    # try:
+
                     oauth2_application_data_object = {
                         'user': user,
                         'client_id': user_client_id,
@@ -50,28 +51,8 @@ class Register(APIView):
                         'client_type': 'confidential',
                         'authorization_grant_type': 'password'
                     }
+                    get_application_model().objects.create(**oauth2_application_data_object)
 
-                    oauth2_application = get_application_model().objects.create(**oauth2_application_data_object)
-                    oauth2_application.save()
-                    # except json.JSONDecodeError: return Response({"details": "Trouble creating the account"},
-                    # status=status.HTTP_400_BAD_REQUEST)
-
-                    # r = requests.post(
-                    #     'http://0.0.0.0:8000/o/token/',
-                    #     data={
-                    #         'grant_type': 'password',
-                    #         'username': email,
-                    #         'password': password,
-                    #         'client_id': oauth2_application.client_id,
-                    #         'client_secret': oauth2_application.client_secret
-                    #     },
-                    # )
-                    # # If it goes well return sucess message (would be empty otherwise)
-                    # print(r.status_code)
-                    # if r.status_code == requests.codes.ok:
-                    #     return Response(r.json(), r.status_code)
-                    # # Return the error if it goes badly
-                    # return Response({"details": r.json()}, r.status_code)
                     return Response({'detail': 'User created successfully'}, status=status.HTTP_201_CREATED)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -87,8 +68,8 @@ class LoginView(APIView):
     @staticmethod
     def post(request):
         """
-        Gets tokens with username and password. Input should be in the format:
-        {"username": "username", "password": "1234abcd"}
+        Gets Oauth2 tokens with email and password. request payload structure should be in the format:
+        {"email": "mail@example.com", "password": "1234abcd"}
         """
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -119,11 +100,13 @@ class LoginView(APIView):
 
 
 class RefreshToken(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
 
     @staticmethod
     def post(request):
         """
-        Registers user to the server. Input should be in the format:
+        Generates new Oauth2 tokens for a logged in user. Request payload structure should be in the
+        following structure. The refresh token should be valid:
         {"refresh_token": "<token>"}
         """
         serializer = RefreshTokenSerializer(data=request.data)
@@ -154,11 +137,12 @@ class RefreshToken(APIView):
 
 
 class Logout(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
     @staticmethod
     def post(request):
         """
-        Method to revoke tokens.
-        {"token": "<token>"}
+        Method to revoke tokens. Requires an authenticated user
         """
         authorization = request.headers.get('Authorization')
         token = authorization.split(' ')[1]
@@ -184,16 +168,54 @@ class Logout(APIView):
 
 
 class ProfileView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
     @staticmethod
     def get(request):
+        """
+        Gets the user profile a the logged in user
+        """
         user = get_object_or_404(User, email=request.user)
         return Response(UserSerializer(user).data)
 
     @staticmethod
     def put(request):
+        """
+        Updates the user profile of the logged in user
+        The request body looks as follows
+        {
+            "full_name": "",
+            "phone_number": "",
+            "username": "",
+            "age": int,
+            "gender": ""
+        }
+        """
         user = get_object_or_404(User, email=request.user)
         serializer = UserSerializer(instance=user, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePasswordView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request):
+        """
+        Updates password of a logged in User. The request body payload structure is as follows;
+        {
+            "password": "",
+            "new_password": ""
+        }
+        """
+        user = get_object_or_404(User, email=self.request.user)
+        serializer = ChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            if user.check_password(serializer.validated_data.get('old_password')):
+                user.password = make_password(serializer.validated_data.get('new_password'), salt=None, hasher='default')
+                user.save()
+                return Response({'detail': 'Password has been changed successfully'})
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

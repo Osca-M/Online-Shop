@@ -12,10 +12,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
-from oscar.defaults import *
-
-# from dotenv import load_dotenv
-# load_dotenv()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -38,53 +34,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'django.contrib.flatpages',
 
     'oauth2_provider',
     'rest_framework',
     'corsheaders',
-    # 'products.apps.ProductsConfig',
+
     'accounts.apps.AccountsConfig',
-    # 'cart.apps.CartConfig',
-    # 'orders.apps.OrdersConfig',
-
-    'oscarapi',
-    'oscar.config.Shop',
-    'analytics.apps.AnalyticsConfig',
-    'checkout.apps.CheckoutConfig',
-    'oscar.apps.address.apps.AddressConfig',
-    'oscar.apps.shipping.apps.ShippingConfig',
-    'catalogue.apps.CatalogueConfig',
-    'catalogue.reviews.apps.CatalogueReviewsConfig',
-    'communication.apps.CommunicationConfig',
-    'partner.apps.PartnerConfig',
-    'basket.apps.BasketConfig',
-    'payment.apps.PaymentConfig',
-    'offer.apps.OfferConfig',
-    'order.apps.OrderConfig',
-    'customer.apps.CustomerConfig',
-    'search.apps.SearchConfig',
-    'voucher.apps.VoucherConfig',
-    'wishlists.apps.WishlistsConfig',
-    'dashboard.apps.DashboardConfig',
-    'dashboard.reports.apps.ReportsDashboardConfig',
-    'dashboard.users.apps.UsersDashboardConfig',
-    'dashboard.orders.apps.OrdersDashboardConfig',
-    'dashboard.catalogue.apps.CatalogueDashboardConfig',
-    'dashboard.offers.apps.OffersDashboardConfig',
-    'dashboard.partners.apps.PartnersDashboardConfig',
-    'dashboard.pages.apps.PagesDashboardConfig',
-    'dashboard.ranges.apps.RangesDashboardConfig',
-    'dashboard.reviews.apps.ReviewsDashboardConfig',
-    'dashboard.vouchers.apps.VouchersDashboardConfig',
-    'dashboard.communications.apps.CommunicationsDashboardConfig',
-    'dashboard.shipping.apps.ShippingDashboardConfig',
-
-    'widget_tweaks',
-    'haystack',
-    'treebeard',
-    # 'solr.thumbnail',
-    'django_tables2',
     'api'
 ]
 
@@ -98,8 +53,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'oscar.apps.basket.middleware.BasketMiddleware',
-    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware'
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -115,7 +68,6 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'cart.context_processors.cart',
             ],
         },
     },
@@ -208,21 +160,4 @@ OAUTH2_PROVIDER = {
 }
 
 # REFRESH_TOKEN_EXPIRE_SECONDS = 101000
-
-SITE_ID = 1
-
-# Mpesa Settings
-
-# BUSINESS_SHORT_CODE = config('BUSINESS_SHORT_CODE')
-# PHONE_NUMBER = config('PHONE_NUMBER')
-# LNM_PASSKEY = config('LNM_PASSKEY')
-# CONSUMER_KEY = config('CONSUMER_KEY')
-# CONSUMER_SECRET = config('CONSUMER_SECRET')
-
-CART_SESSION_ID = '155265'
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-    },
-}
-# OSCARAPI_BLOCK_ADMIN_API_ACCESS = False
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
