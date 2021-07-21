@@ -1,2 +1,2 @@
 # Online-Shop
-drf backend for an e-commerce website
+django oauth2 REST API application
