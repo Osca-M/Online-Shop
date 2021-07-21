@@ -32,14 +32,12 @@ class Register(APIView):
                 return Response({'detail': 'User with such a mail address exists'}, status=status.HTTP_400_BAD_REQUEST)
             if email and password:
                 temp_data = {'email': email, 'password': password}
-
                 serializer = CreateUserSerializer(data=temp_data)
-                serializer.is_valid(raise_exception=True)
                 if serializer.is_valid():
                     user = serializer.save()
                     user_client_id = generate_client_id()
                     user_client_secret = generate_client_secret()
-                    # try:
+
                     oauth2_application_data_object = {
                         'user': user,
                         'client_id': user_client_id,
@@ -50,28 +48,8 @@ class Register(APIView):
                         'client_type': 'confidential',
                         'authorization_grant_type': 'password'
                     }
+                    get_application_model().objects.create(**oauth2_application_data_object)
 
-                    oauth2_application = get_application_model().objects.create(**oauth2_application_data_object)
-                    oauth2_application.save()
-                    # except json.JSONDecodeError: return Response({"details": "Trouble creating the account"},
-                    # status=status.HTTP_400_BAD_REQUEST)
-
-                    # r = requests.post(
-                    #     'http://0.0.0.0:8000/o/token/',
-                    #     data={
-                    #         'grant_type': 'password',
-                    #         'username': email,
-                    #         'password': password,
-                    #         'client_id': oauth2_application.client_id,
-                    #         'client_secret': oauth2_application.client_secret
-                    #     },
-                    # )
-                    # # If it goes well return sucess message (would be empty otherwise)
-                    # print(r.status_code)
-                    # if r.status_code == requests.codes.ok:
-                    #     return Response(r.json(), r.status_code)
-                    # # Return the error if it goes badly
-                    # return Response({"details": r.json()}, r.status_code)
                     return Response({'detail': 'User created successfully'}, status=status.HTTP_201_CREATED)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

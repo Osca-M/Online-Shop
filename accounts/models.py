@@ -56,29 +56,8 @@ class User(AbstractBaseUser):
         """
         return self.profile.username
 
-    def email_user(self, subject, message, from_email=None, **kwargs):
-        """
-        Send an email to this user.
-        """
-        send_mail(subject, message, from_email, [self.email], **kwargs)
-
-    def _migrate_alerts_to_user(self):
-        """
-        Transfer any active alerts linked to a user's email address to the
-        newly registered user.
-        """
-        ProductAlert = self.alerts.model
-        alerts = ProductAlert.objects.filter(
-            email=self.email, status=ProductAlert.ACTIVE)
-        alerts.update(user=self, key='', email='')
-
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        # Migrate any "anonymous" product alerts to the registered user
-        # Ideally, this would be done via a post-save signal. But we can't
-        # use get_user_model to wire up signals to custom user models
-        # see Oscar ticket #1127, Django ticket #19218
-        self._migrate_alerts_to_user()
 
     class Meta:
         ordering = ('email',)
@@ -101,7 +80,7 @@ class UserProfile(models.Model):
         regex=r'^\+?|d{9,14}$',
         message="Phone number must be entered in the format: '+99999'. Up to 14 digits allowed."
     )
-    phone_number = models.CharField(max_length=15, validators=[phone_regex], unique=True, null=False, blank=True)
+    phone_number = models.CharField(max_length=15, validators=[phone_regex], blank=True)
     username = models.CharField(blank=True, max_length=255, unique=False)
     age = models.PositiveIntegerField(null=False, blank=True)
     GENDER_CHOICES = (
