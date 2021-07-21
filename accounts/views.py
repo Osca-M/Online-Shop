@@ -12,8 +12,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-
 from .serializer import CreateUserSerializer, LoginSerializer, RefreshTokenSerializer, UserSerializer
+
 User = get_user_model()
 CLIENT_ID = "Application.objects.get(name='commerce').client_id"
 CLIENT_SECRET = "Application.objects.get(name='commerce').client_secret"
@@ -178,6 +178,14 @@ class ProfileView(APIView):
     def put(request):
         """
         Updates the user profile of the logged in user
+        The request body looks as follows
+        {
+            "full_name": "",
+            "phone_number": "",
+            "username": "",
+            "age": int,
+            "gender": ""
+        }
         """
         user = get_object_or_404(User, email=request.user)
         serializer = UserSerializer(instance=user, data=request.data)
@@ -185,3 +193,18 @@ class ProfileView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePasswordView(APIView):
+
+    def post(self, request):
+        """
+        Updates password of a logged in User. The request body payload structure is as follows;
+        {
+            "password": "",
+            "new_password": ""
+        }
+        """
+        user = get_object_or_404(User, email=self.request.user)
+        print(user, 'user')
+        return Response(UserSerializer(user).data)
