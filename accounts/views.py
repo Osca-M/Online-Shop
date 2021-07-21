@@ -1,13 +1,10 @@
 import requests
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.db import transaction
 from django.shortcuts import get_object_or_404
-
 from oauth2_provider.generators import generate_client_id, generate_client_secret
 from oauth2_provider.models import get_application_model, get_refresh_token_model, get_access_token_model
-
 from rest_framework import status, permissions
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -219,6 +216,6 @@ class ChangePasswordView(APIView):
             if user.check_password(serializer.validated_data.get('old_password')):
                 user.password = make_password(serializer.validated_data.get('new_password'), salt=None, hasher='default')
                 user.save()
-                return Response({'detail': 'Password change was successful'})
+                return Response({'detail': 'Password has been changed successfully'})
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
