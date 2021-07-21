@@ -25,6 +25,10 @@ class Register(APIView):
 
     @staticmethod
     def post(request, *args, **kwargs):
+        """
+        Creates a User account with email and password. Request payload should be in the format:
+        {"email": "mail@example.com", "password": "1234abcd"}
+        """
         with transaction.atomic():
             email = request.data.get('email', False)
             password = request.data.get('password', False)
@@ -65,8 +69,8 @@ class LoginView(APIView):
     @staticmethod
     def post(request):
         """
-        Gets tokens with username and password. Input should be in the format:
-        {"username": "username", "password": "1234abcd"}
+        Gets Oauth2 tokens with email and password. request payload structure should be in the format:
+        {"email": "mail@example.com", "password": "1234abcd"}
         """
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -101,7 +105,8 @@ class RefreshToken(APIView):
     @staticmethod
     def post(request):
         """
-        Registers user to the server. Input should be in the format:
+        Generates new Oauth2 tokens for a logged in user. Request payload structure should be in the
+        following structure. The refresh token should be valid:
         {"refresh_token": "<token>"}
         """
         serializer = RefreshTokenSerializer(data=request.data)
@@ -135,8 +140,7 @@ class Logout(APIView):
     @staticmethod
     def post(request):
         """
-        Method to revoke tokens.
-        {"token": "<token>"}
+        Method to revoke tokens. Requires an authenticated user
         """
         authorization = request.headers.get('Authorization')
         token = authorization.split(' ')[1]
@@ -164,11 +168,17 @@ class Logout(APIView):
 class ProfileView(APIView):
     @staticmethod
     def get(request):
+        """
+        Gets the user profile a the logged in user
+        """
         user = get_object_or_404(User, email=request.user)
         return Response(UserSerializer(user).data)
 
     @staticmethod
     def put(request):
+        """
+        Updates the user profile of the logged in user
+        """
         user = get_object_or_404(User, email=request.user)
         serializer = UserSerializer(instance=user, data=request.data)
         if serializer.is_valid():
