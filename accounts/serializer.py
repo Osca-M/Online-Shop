@@ -144,3 +144,25 @@ class RefreshTokenSerializer(serializers.Serializer):
         pass
 
     refresh_token = serializers.CharField()
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    def update(self, instance, validated_data):
+        pass
+
+    def create(self, validated_data):
+        pass
+
+    password = serializers.CharField()
+    new_password = serializers.CharField()
+
+    @staticmethod
+    def validate_new_password(value):
+        errors = dict()
+        try:
+            validators.validate_password(password=value)
+        except exceptions.ValidationError as e:
+            errors['password'] = list(e.messages)
+        if errors:
+            raise serializers.ValidationError(errors)
+        return value
