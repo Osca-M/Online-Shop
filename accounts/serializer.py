@@ -153,7 +153,7 @@ class ChangePasswordSerializer(serializers.Serializer):
     def create(self, validated_data):
         pass
 
-    password = serializers.CharField()
+    old_password = serializers.CharField()
     new_password = serializers.CharField()
 
     @staticmethod
