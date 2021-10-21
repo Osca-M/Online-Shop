@@ -14,7 +14,7 @@ ADMINS = (
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': config('PROD_DB_NAME'),
         'USER': config('PROD_DB_USER'),
         'PASSWORD': config('PROD_DB_PASSWORD'),
