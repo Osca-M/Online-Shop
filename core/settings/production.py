@@ -1,7 +1,7 @@
 from .base import *
 
 DEBUG = os.getenv('DEBUG', True)
-
+ALLOWED_HOSTS = ['*']
 from decouple import config
 
 # Site admins
