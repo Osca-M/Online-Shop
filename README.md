@@ -13,4 +13,4 @@ PROD_DB_HOST={database host} <br>
 PROD_DB_PORT={database port}
 </code>
 <br>
-Regards the database, my assumption is that your database table exists on the public schema.
+Regards the database, my assumption is that your database has a public schema.
