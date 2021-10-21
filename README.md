@@ -22,3 +22,25 @@ Apply the database migrations to your database `python manage.py migrate`
 You can now run the django server `python manage.py runserver 0.0.0.0:5603`
 <br><br>
 
+The REST API Endpoints can be accessed from:
+<br><br>
+`0.0.0.0:8000/auth/create-account`<br>
+To create a user
+<br><br>
+`0.0.0.0:8000/auth/login`<br>
+For login
+<br><br>
+`0.0.0.0:8000/auth/refresh-token`<br>
+To refresh access tokens
+<br><br>
+`0.0.0.0:8000/auth/logout`<br>
+Invalidate access tokens
+<br><br>
+`0.0.0.0:8000/auth/change-password`<br>
+Change password for a user
+<br><br>
+`0.0.0.0:8000/auth/profile`<br>
+Get a user's profile. Method POST
+<br><br>
+`0.0.0.0:8000/auth/profile`<br>
+Update a User's profile. Method PUT.
