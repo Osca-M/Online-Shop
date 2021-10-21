@@ -20,7 +20,7 @@ Install the project requirements `pip install -r requirement.txt`
 <br><br>
 Apply the database migrations to your database `python manage.py migrate`
 <br><br>
-You can now run the django server `python manage.py runserver 0.0.0.0:5603`
+You can now run the django server `python manage.py runserver 0.0.0.0:8000`
 <br><br>
 
 The REST API Endpoints can be accessed from:
